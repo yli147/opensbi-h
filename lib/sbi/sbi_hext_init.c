@@ -117,6 +117,7 @@ int patch_fdt_cpu_isa(void *fdt)
 
 		isa_string = fdt_getprop(fdt, cpu, "riscv,isa", &len);
 
+#if 0
 		/**
 		 * If riscv,isa has no underscore:
 		 * 	rv64imafdc -> rv64imafdch
@@ -148,6 +149,33 @@ int patch_fdt_cpu_isa(void *fdt)
 			((char *)new_isa_string)[len - 1] = 'h';
 			((char *)new_isa_string)[len]	  = '\0';
 		}
+#else
+		/**
+		 * If riscv,isa has no underscore:
+		 * 	rv64imafdc -> rv64imafdch
+		 * If riscv,isa has underscore:
+		 * 	rv64imafdc_zicsr -> rv64imafdch_zicsr
+		 */
+		int offset;
+		pos = sbi_strchr(isa_string, '_');
+		if(pos) offset = pos - (char *)isa_string;
+		append_len = 1;
+		err = fdt_setprop_placeholder(fdt, cpu, "riscv,isa",
+					      len + append_len,
+					      &new_isa_string);
+		if (err < 0) {
+			return SBI_EFAIL;
+		}
+		if (pos) {
+			int i = len;
+			for(i = len; i >= offset; i--)
+				((char *)new_isa_string)[i + 1] = ((char *)isa_string)[i];
+			((char *)new_isa_string)[offset] = 'h';
+		} else {
+			((char *)new_isa_string)[len - 1] = 'h';
+			((char *)new_isa_string)[len]	  = '\0';
+		}
+#endif
 	}
 
 	if (cpu < 0 && cpu != -FDT_ERR_NOTFOUND) {
