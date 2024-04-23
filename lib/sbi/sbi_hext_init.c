@@ -117,7 +117,7 @@ int patch_fdt_cpu_isa(void *fdt)
 
 		isa_string = fdt_getprop(fdt, cpu, "riscv,isa", &len);
 
-#if 0
+#if 1
 		/**
 		 * If riscv,isa has no underscore:
 		 * 	rv64imafdc -> rv64imafdch

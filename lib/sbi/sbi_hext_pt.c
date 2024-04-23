@@ -14,7 +14,7 @@ int sbi_hext_pt_init(unsigned long pt_start, unsigned long nodes_per_hart)
 	u32 hart_count;
 
 	hart_count = sbi_platform_hart_count(sbi_platform_thishart_ptr());
-
+	unsigned long offset = 0;
 	for (u32 index = 0; index < hart_count; index++) {
 		struct hext_state *hext = &hart_hext_state[index];
 
@@ -22,10 +22,14 @@ int sbi_hext_pt_init(unsigned long pt_start, unsigned long nodes_per_hart)
 			continue;
 
 		struct pt_area_info *pt_area = &hext->pt_area;
-
+#if 0
 		pt_area->pt_start =
 			pt_start + index * nodes_per_hart * PT_NODE_SIZE;
-
+#else
+		pt_area->pt_start =
+			pt_start + offset * nodes_per_hart * PT_NODE_SIZE;
+		offset++;
+#endif
 		pt_area->alloc_top = pt_area->pt_start + PT_NODE_SIZE;
 
 		pt_area->alloc_limit =

@@ -56,7 +56,7 @@ void sbi_hext_switch_virt(struct sbi_trap_regs *regs, struct hext_state *hext,
 		 *
 		 * Similarly for sstatus.VS.
 		 */
-
+#if 0 // Temp disable
 		if (misa_extension('F') && (hext->sstatus & SSTATUS_FS) == 0)
 			sbi_panic("%s: Impossible to enforce sstatus.FS = Off",
 				  __func__);
@@ -64,7 +64,7 @@ void sbi_hext_switch_virt(struct sbi_trap_regs *regs, struct hext_state *hext,
 		if (misa_extension('V') && (hext->sstatus & SSTATUS_VS) == 0)
 			sbi_panic("%s: Impossible to enforce sstatus.VS = Off",
 				  __func__);
-
+#endif
 		hext->sstatus &= SSTATUS_SIE;
 		hext->sstatus |=
 			(hext->sstatus & SSTATUS_SPIE) ? SSTATUS_SIE : 0;
